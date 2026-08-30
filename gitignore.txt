@@ -1,0 +1,10 @@
+# La base se genera con seed.py, no se sube
+riohondo.db
+*.db-journal
+
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+.DS_Store
