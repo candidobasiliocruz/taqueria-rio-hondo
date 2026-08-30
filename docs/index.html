@@ -5,10 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#CC1F0E">
 <title>Taquería Río Hondo</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Karla:wght@400;600&display=swap" rel="stylesheet">
 <style>
+  /* Tipografías servidas desde el propio sitio. Antes venían de Google Fonts
+     con un <link>, que bloquea el render: si esa petición no resuelve la
+     pantalla se queda en blanco. Con el hotspot de la taquería eso pasa.
+     font-display:swap hace que el texto se vea de inmediato con la
+     tipografía del sistema y cambie sola cuando cargue la buena. */
+  @font-face {
+    font-family: Anton;
+    src: url("fuentes/anton-400.woff2") format("woff2");
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: Karla;
+    src: url("fuentes/karla-400.woff2") format("woff2");
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: Karla;
+    src: url("fuentes/karla-600.woff2") format("woff2");
+    font-weight: 600; font-style: normal; font-display: swap;
+  }
+
   :root {
     --papel: #F7E3AE;
     --tarjeta: #FDF4DC;
