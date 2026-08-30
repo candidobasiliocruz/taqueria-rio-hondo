@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2D4A2E">
+<title>Taquería Río Hondo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Karla:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --papel: #FBF8F2;
+    --tinta: #1C1815;
+    --penca: #2D4A2E;
+    --penca-claro: #4A6B49;
+    --guajillo: #B5321E;
+    --ceniza: #857D73;
+    --linea: #E3DCD0;
+    --rotulo: Anton, "Arial Narrow", Impact, sans-serif;
+    --texto: Karla, system-ui, -apple-system, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--papel);
+    color: var(--tinta);
+    font-family: var(--texto);
+    font-size: 17px;
+    line-height: 1.4;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .encabezado {
+    background: var(--penca);
+    color: var(--papel);
+    padding: 22px 20px 20px;
+    padding-top: max(22px, env(safe-area-inset-top));
+  }
+  .encabezado h1 {
+    font-family: var(--rotulo);
+    font-size: 34px;
+    font-weight: 400;
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    margin: 0;
+  }
+  .mesa {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 4px 12px;
+    border: 1.5px solid var(--penca-claro);
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .pestanas {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 12px 20px;
+    background: var(--papel);
+    border-bottom: 1px solid var(--linea);
+  }
+  .pestanas::-webkit-scrollbar { display: none; }
+  .pestanas a {
+    flex: 0 0 auto;
+    padding: 7px 15px;
+    border: 1.5px solid var(--linea);
+    border-radius: 999px;
+    color: var(--tinta);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .pestanas a:focus-visible,
+  .pestanas a.activa {
+    background: var(--tinta);
+    border-color: var(--tinta);
+    color: var(--papel);
+    outline: none;
+  }
+
+  .rotulo {
+    background: var(--penca);
+    color: var(--papel);
+    font-family: var(--rotulo);
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 11px 20px;
+    margin: 0;
+    scroll-margin-top: 62px;
+  }
+
+  .fila {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding: 17px 20px;
+    border-bottom: 1px solid var(--linea);
+  }
+  .fila .nombre {
+    flex: 1;
+    font-size: 17px;
+    font-weight: 600;
+    margin: 0;
+  }
+  .fila .desc {
+    flex-basis: 100%;
+    order: 3;
+    margin: 5px 0 0;
+    color: var(--ceniza);
+    font-size: 14px;
+  }
+  .fila .precio {
+    font-family: var(--rotulo);
+    font-size: 25px;
+    font-weight: 400;
+    color: var(--guajillo);
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+  }
+
+  .fila.agotado .nombre,
+  .fila.agotado .precio { color: var(--ceniza); }
+  .fila.agotado .precio { text-decoration: line-through; }
+  .sello {
+    display: inline-block;
+    margin-left: 9px;
+    padding: 2px 8px;
+    border: 1.5px solid var(--guajillo);
+    border-radius: 3px;
+    color: var(--guajillo);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    vertical-align: 2px;
+  }
+
+  .aviso {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--ceniza);
+  }
+  .aviso button {
+    margin-top: 14px;
+    padding: 11px 22px;
+    border: 1.5px solid var(--tinta);
+    border-radius: 999px;
+    background: none;
+    color: var(--tinta);
+    font-family: var(--texto);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .pie {
+    padding: 26px 20px 40px;
+    padding-bottom: max(40px, env(safe-area-inset-bottom));
+    color: var(--ceniza);
+    font-size: 14px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<header class="encabezado">
+  <h1>Taquería<br>Río Hondo</h1>
+  <div class="mesa" id="mesa" hidden></div>
+</header>
+
+<nav class="pestanas" id="pestanas" aria-label="Categorías"></nav>
+
+<main id="menu">
+  <p class="aviso">Cargando el menú…</p>
+</main>
+
+<p class="pie">Los precios incluyen IVA. Por ahora, pide con el mesero.</p>
+
+<script>
+const pesos = c => "$" + (c / 100).toFixed(c % 100 ? 2 : 0);
+
+function leerMesa() {
+  const m = location.pathname.match(/^\/m\/(.+)$/);
+  return m ? decodeURIComponent(m[1]) : "";
+}
+
+function pintarMesa() {
+  const mesa = leerMesa();
+  if (!mesa) return;
+  const el = document.getElementById("mesa");
+  el.textContent = "Mesa " + mesa;
+  el.hidden = false;
+}
+
+function pintarMenu(categorias) {
+  const menu = document.getElementById("menu");
+  const tabs = document.getElementById("pestanas");
+  menu.textContent = "";
+  tabs.textContent = "";
+
+  if (!categorias.length) {
+    menu.innerHTML = '<p class="aviso">Todavía no hay productos cargados.</p>';
+    return;
+  }
+
+  for (const cat of categorias) {
+    const id = "cat-" + cat.id;
+
+    const tab = document.createElement("a");
+    tab.href = "#" + id;
+    tab.textContent = cat.nombre;
+    tabs.appendChild(tab);
+
+    const titulo = document.createElement("h2");
+    titulo.className = "rotulo";
+    titulo.id = id;
+    titulo.textContent = cat.nombre;
+    menu.appendChild(titulo);
+
+    for (const p of cat.productos) {
+      const fila = document.createElement("div");
+      fila.className = "fila" + (p.disponible ? "" : " agotado");
+
+      const nombre = document.createElement("p");
+      nombre.className = "nombre";
+      nombre.textContent = p.nombre;
+      if (!p.disponible) {
+        const sello = document.createElement("span");
+        sello.className = "sello";
+        sello.textContent = "Hoy no hay";
+        nombre.appendChild(sello);
+      }
+      fila.appendChild(nombre);
+
+      const precio = document.createElement("span");
+      precio.className = "precio";
+      precio.textContent = pesos(p.precio_centavos);
+      fila.appendChild(precio);
+
+      if (p.descripcion) {
+        const desc = document.createElement("p");
+        desc.className = "desc";
+        desc.textContent = p.descripcion;
+        fila.appendChild(desc);
+      }
+
+      menu.appendChild(fila);
+    }
+  }
+
+  marcarPestanaVisible();
+}
+
+function marcarPestanaVisible() {
+  const titulos = document.querySelectorAll(".rotulo");
+  const tabs = document.querySelectorAll(".pestanas a");
+  if (!titulos.length || !("IntersectionObserver" in window)) return;
+
+  const obs = new IntersectionObserver(entradas => {
+    for (const e of entradas) {
+      if (!e.isIntersecting) continue;
+      tabs.forEach(t => t.classList.toggle(
+        "activa", t.getAttribute("href") === "#" + e.target.id));
+    }
+  }, { rootMargin: "-62px 0px -75% 0px" });
+
+  titulos.forEach(t => obs.observe(t));
+}
+
+async function cargar() {
+  const menu = document.getElementById("menu");
+  menu.innerHTML = '<p class="aviso">Cargando el menú…</p>';
+  try {
+    const r = await fetch("/api/menu", { cache: "no-store" });
+    if (!r.ok) throw new Error(r.status);
+    pintarMenu((await r.json()).categorias);
+  } catch (err) {
+    menu.innerHTML =
+      '<div class="aviso"><p>No se pudo cargar el menú. ' +
+      'Revisa tu conexión.</p><button type="button">Reintentar</button></div>';
+    menu.querySelector("button").addEventListener("click", cargar);
+  }
+}
+
+pintarMesa();
+cargar();
+</script>
+
+</body>
+</html>
