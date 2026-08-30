@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#CC1F0E">
+<title>Taquería Río Hondo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Karla:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --papel: #F7E3AE;
+    --tarjeta: #FDF4DC;
+    --crema: #FDF6E3;
+    --tinta: #1A1512;
+    --rojo: #CC1F0E;
+    --rojo-claro: #E0503F;
+    --rojo-hondo: #A3160A;
+    --tortilla: #F0C35C;
+    --ceniza: #635B55;
+    --linea: #E3CD98;
+    --rotulo: Anton, "Arial Narrow", Impact, sans-serif;
+    --texto: Karla, system-ui, -apple-system, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--papel);
+    color: var(--tinta);
+    font-family: var(--texto);
+    font-size: 17px;
+    line-height: 1.4;
+    -webkit-text-size-adjust: 100%;
+  }
+  body.con-barra { padding-bottom: 96px; }
+  body.sin-scroll { overflow: hidden; }
+
+  .encabezado {
+    background: var(--rojo);
+    color: var(--crema);
+    padding: 22px 20px 18px;
+    padding-top: max(22px, env(safe-area-inset-top));
+  }
+  .marca { display: flex; align-items: center; gap: 14px; }
+  .marca .logo {
+    width: auto;
+    height: 62px;
+    flex: 0 0 auto;
+  }
+  .encabezado h1 {
+    font-family: var(--rotulo);
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    margin: 0;
+  }
+  .mesa {
+    display: inline-block;
+    margin-top: 9px;
+    padding: 4px 12px;
+    border: 1.5px solid var(--rojo-claro);
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .modos {
+    display: flex;
+    gap: 6px;
+    margin-top: 16px;
+    padding: 5px;
+    background: rgba(0, 0, 0, 0.22);
+    border-radius: 999px;
+  }
+  .modos button {
+    flex: 1;
+    padding: 11px 8px;
+    border: none;
+    border-radius: 999px;
+    background: none;
+    color: var(--crema);
+    font-family: var(--texto);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .modos button[aria-pressed="true"] { background: var(--crema); color: var(--rojo); }
+  .modos button:focus-visible { outline: 2px solid var(--crema); outline-offset: 2px; }
+
+  .pestanas {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 12px 20px;
+    background: var(--papel);
+    border-bottom: 1px solid var(--linea);
+  }
+  .pestanas::-webkit-scrollbar { display: none; }
+  .pestanas a {
+    flex: 0 0 auto;
+    padding: 7px 15px;
+    border: 1.5px solid var(--linea);
+    border-radius: 999px;
+    color: var(--tinta);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .pestanas a:focus-visible,
+  .pestanas a.activa {
+    background: var(--tinta);
+    border-color: var(--tinta);
+    color: var(--crema);
+    outline: none;
+  }
+
+  .rotulo {
+    background: var(--rojo);
+    color: var(--crema);
+    font-family: var(--rotulo);
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 11px 20px;
+    margin: 0;
+    scroll-margin-top: 62px;
+  }
+
+  .fila {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--linea);
+  }
+  .fila .info { flex: 1; min-width: 0; }
+  .fila .nombre { font-size: 17px; font-weight: 600; margin: 0; }
+  .fila .desc { margin: 4px 0 0; color: var(--ceniza); font-size: 14px; }
+  .fila .derecha {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+  }
+  .fila .precio {
+    font-family: var(--rotulo);
+    font-size: 25px;
+    font-weight: 400;
+    color: var(--tinta);
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    line-height: 1.1;
+  }
+  .fila .unidad {
+    display: block;
+    font-family: var(--texto);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ceniza);
+    letter-spacing: 0.04em;
+  }
+
+  .fila.agotado .nombre { color: var(--ceniza); }
+  .fila.agotado .precio { color: var(--ceniza); text-decoration: line-through; }
+  .sello {
+    display: inline-block;
+    margin-left: 9px;
+    padding: 2px 8px;
+    border: 1.5px solid var(--tinta);
+    border-radius: 3px;
+    color: var(--tinta);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    vertical-align: 2px;
+  }
+
+  .paso { display: flex; align-items: center; gap: 4px; }
+  .paso button {
+    width: 40px;
+    height: 40px;
+    border: 1.5px solid var(--tinta);
+    border-radius: 999px;
+    background: var(--papel);
+    color: var(--tinta);
+    font-family: var(--texto);
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .paso button:active { background: var(--tinta); color: var(--crema); }
+  .paso button:focus-visible { outline: 2px solid var(--tinta); outline-offset: 2px; }
+  .paso .cuenta {
+    min-width: 26px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .barra {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    padding-bottom: max(14px, env(safe-area-inset-bottom));
+    background: var(--rojo);
+    color: var(--crema);
+    border: none;
+    width: 100%;
+    font-family: var(--texto);
+    text-align: left;
+    cursor: pointer;
+  }
+  .barra[hidden] { display: none; }
+  .barra .resumen { flex: 1; font-size: 15px; font-weight: 600; }
+  .barra .total { font-family: var(--rotulo); font-size: 24px; letter-spacing: 0.02em; }
+
+  .telon {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    display: flex;
+    align-items: flex-end;
+    background: rgba(61, 36, 9, 0.55);
+  }
+  .telon[hidden] { display: none; }
+  .telon.arriba { align-items: flex-start; }
+  .hoja {
+    width: 100%;
+    max-height: 88vh;
+    overflow-y: auto;
+    background: var(--papel);
+    border-radius: 18px 18px 0 0;
+    padding: 22px 20px;
+    padding-bottom: max(22px, env(safe-area-inset-bottom));
+  }
+  .telon.arriba .hoja {
+    border-radius: 0 0 18px 18px;
+    padding-top: max(30px, env(safe-area-inset-top));
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .hoja { animation: subir .22s ease-out; }
+    @keyframes subir { from { transform: translateY(14px); } }
+    .telon.arriba .hoja { animation: bajar .22s ease-out; }
+    @keyframes bajar { from { transform: translateY(-14px); } }
+  }
+  .hoja h2 {
+    font-family: var(--rotulo);
+    font-size: 26px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin: 0 0 4px;
+  }
+  .hoja .sub { margin: 0 0 18px; color: var(--ceniza); font-size: 15px; }
+
+  .grupo { margin-bottom: 18px; }
+  .grupo h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 2px;
+  }
+  .grupo .pista { margin: 0 0 10px; color: var(--ceniza); font-size: 13px; }
+  .opcion {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    border: 1.5px solid var(--linea);
+    border-radius: 10px;
+    background: var(--tarjeta);
+    cursor: pointer;
+  }
+  .opcion.puesta { border-color: var(--tinta); background: #F3DFA4; }
+  .opcion input { width: 21px; height: 21px; accent-color: var(--tinta); flex: 0 0 auto; }
+  .opcion .etiqueta { flex: 1; font-size: 16px; }
+  .opcion .extra { color: var(--tinta); font-weight: 600; font-size: 15px; }
+
+  .renglon {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--linea);
+  }
+  .renglon .nombre { flex: 1; font-weight: 600; font-size: 16px; min-width: 0; }
+  .renglon .detalle { color: var(--ceniza); font-size: 13px; font-weight: 400; margin-top: 2px; }
+  .renglon .importe {
+    font-family: var(--rotulo);
+    font-size: 20px;
+    min-width: 64px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .totales {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 18px 0 4px;
+  }
+  .totales span:first-child { font-weight: 600; }
+  .totales .granTotal { font-family: var(--rotulo); font-size: 32px; color: var(--tinta); }
+
+  .campo { margin-top: 14px; }
+  .campo label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .campo input, .campo textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--linea);
+    border-radius: 10px;
+    background: var(--tarjeta);
+    color: var(--tinta);
+    font-family: var(--texto);
+    font-size: 16px;
+  }
+  .campo input:focus, .campo textarea:focus { outline: none; border-color: var(--tinta); }
+  .campo textarea { resize: vertical; min-height: 62px; }
+  .campo .error { margin: 6px 0 0; color: var(--rojo-hondo); font-size: 14px; font-weight: 600; }
+  .campo.malo input { border-color: var(--rojo-hondo); }
+
+  .principal, .secundario {
+    width: 100%;
+    padding: 16px;
+    margin-top: 14px;
+    border-radius: 12px;
+    font-family: var(--texto);
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .principal { border: none; background: var(--tinta); color: var(--crema); }
+  .principal:disabled { background: var(--ceniza); cursor: default; }
+  .secundario {
+    border: 1.5px solid var(--linea);
+    background: none;
+    color: var(--tinta);
+    margin-top: 8px;
+  }
+  .modoGrande {
+    width: 100%;
+    padding: 22px 18px;
+    margin-top: 10px;
+    border: 1.5px solid var(--tinta);
+    border-radius: 14px;
+    background: none;
+    color: var(--tinta);
+    font-family: var(--texto);
+    font-size: 19px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+  }
+  .modoGrande small { display: block; margin-top: 3px; color: var(--ceniza); font-size: 14px; font-weight: 400; }
+
+  .hoja.rojo { background: var(--rojo); color: var(--crema); }
+  .hoja.rojo h2 { color: var(--crema); }
+  .hoja.rojo .sub { color: #F9D2CB; }
+  .hoja.rojo .modoGrande {
+    border: none;
+    background: var(--tortilla);
+    color: var(--tinta);
+  }
+  .hoja.rojo .modoGrande small { color: #4A443E; }
+  .hoja.rojo .modoGrande:active { background: #E3B247; }
+  .hoja.rojo .modoGrande:focus-visible { outline: 3px solid var(--crema); outline-offset: 3px; }
+
+  .alerta {
+    margin: 14px 0 0;
+    padding: 14px;
+    border: 1.5px solid var(--rojo-hondo);
+    border-radius: 10px;
+    color: var(--rojo-hondo);
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .alerta[hidden] { display: none; }
+
+  .folio { font-family: var(--rotulo); font-size: 64px; color: var(--tinta); margin: 8px 0 0; line-height: 1; }
+
+  .aviso { padding: 40px 20px; text-align: center; color: var(--ceniza); }
+  .aviso button {
+    margin-top: 14px; padding: 11px 22px;
+    border: 1.5px solid var(--tinta); border-radius: 999px;
+    background: none; color: var(--tinta);
+    font-family: var(--texto); font-size: 15px; font-weight: 600; cursor: pointer;
+  }
+
+  .pie { padding: 26px 20px 40px; color: var(--ceniza); font-size: 14px; text-align: center; }
+</style>
+</head>
+<body>
+
+<header class="encabezado">
+  <div class="marca">
+    <img class="logo" src="logo.svg" alt="" width="99" height="140">
+    <h1>Taquería<br>Río Hondo</h1>
+  </div>
+  <div class="mesa" id="mesa" hidden></div>
+  <div class="modos" id="modos" role="group" aria-label="Modalidad">
+    <button type="button" data-modo="aqui" aria-pressed="false">Para comer aquí</button>
+    <button type="button" data-modo="llevar" aria-pressed="false">Para llevar</button>
+  </div>
+</header>
+
+<nav class="pestanas" id="pestanas" aria-label="Categorías"></nav>
+
+<main id="menu"><p class="aviso">Cargando el menú…</p></main>
+
+<p class="pie">Los precios incluyen IVA.<br>Demostración: los pedidos no se mandan a nadie.</p>
+
+<button class="barra" id="barra" type="button" hidden>
+  <span class="resumen" id="barraResumen"></span>
+  <span class="total" id="barraTotal"></span>
+</button>
+
+<div class="telon" id="telon" hidden>
+  <div class="hoja" id="hoja" role="dialog" aria-modal="true" aria-label="Pedido"></div>
+</div>
+
+<script>
+const LLAVE_CARRITO = "riohondo:carrito";
+const LLAVE_MODO = "riohondo:modalidad";
+const NOMBRE_MODO = { aqui: "Para comer aquí", llevar: "Para llevar" };
+const UNIDAD = { kilo: "por kilo", litro: "el litro" };
+
+let modalidad = null;
+let OFERTAS = {};   // oferta_id -> producto
+let carrito = [];   // [{ oferta_id, opciones:[ids], cantidad }]
+let enviando = false;
+
+const pesos = c => "$" + (c / 100).toFixed(c % 100 ? 2 : 0);
+const $ = id => document.getElementById(id);
+const clave = l => l.oferta_id + ":" + [...l.opciones].sort((a, b) => a - b).join(",");
+
+// ------------------------------------------------------------- mesa
+
+function leerMesa() {
+  // En Pages no hay rutas de servidor, así que la mesa viene como ?mesa=5
+  const q = new URLSearchParams(location.search).get("mesa");
+  if (q) return q.trim();
+  const m = location.pathname.match(/^\/m\/(.+)$/);
+  return m ? decodeURIComponent(m[1]).trim() : "";
+}
+
+function pintarMesa() {
+  const mesa = leerMesa();
+  if (!mesa) return;
+  const el = $("mesa");
+  el.textContent = "Mesa " + mesa;
+  el.hidden = false;
+}
+
+// ------------------------------------------------------------- carrito
+
+function guardar() {
+  try {
+    localStorage.setItem(LLAVE_CARRITO, JSON.stringify(carrito));
+    if (modalidad) localStorage.setItem(LLAVE_MODO, modalidad);
+  } catch (e) {}
+}
+
+function recuperar() {
+  try {
+    const c = JSON.parse(localStorage.getItem(LLAVE_CARRITO) || "[]");
+    if (Array.isArray(c)) carrito = c.filter(l =>
+      Number.isInteger(l.oferta_id) && Number.isInteger(l.cantidad) &&
+      l.cantidad > 0 && Array.isArray(l.opciones));
+  } catch (e) { carrito = []; }
+  try { modalidad = localStorage.getItem(LLAVE_MODO) || null; } catch (e) {}
+  if (!["aqui", "llevar"].includes(modalidad)) modalidad = null;
+}
+
+function agregar(oferta_id, opciones, delta = 1) {
+  const nueva = { oferta_id, opciones: [...opciones].sort((a, b) => a - b), cantidad: 0 };
+  const k = clave(nueva);
+  const existente = carrito.find(l => clave(l) === k);
+  if (existente) {
+    existente.cantidad = Math.min(50, existente.cantidad + delta);
+    if (existente.cantidad <= 0) carrito = carrito.filter(l => l !== existente);
+  } else if (delta > 0) {
+    nueva.cantidad = Math.min(50, delta);
+    carrito.push(nueva);
+  }
+  guardar();
+  refrescarPasos();
+  refrescarBarra();
+}
+
+const importeLinea = l => {
+  const p = OFERTAS[l.oferta_id];
+  if (!p) return 0;
+  const extras = l.opciones.reduce((s, id) => s + (extraDe(p, id) || 0), 0);
+  return (p.precio_centavos + extras) * l.cantidad;
+};
+
+function extraDe(prod, opcion_id) {
+  for (const g of prod.grupos)
+    for (const o of g.opciones)
+      if (o.id === opcion_id) return o.precio_extra_centavos;
+  return null;
+}
+
+function nombreOpcion(prod, opcion_id) {
+  for (const g of prod.grupos)
+    for (const o of g.opciones)
+      if (o.id === opcion_id) return o.nombre;
+  return null;
+}
+
+const totalCentavos = () => carrito.reduce((s, l) => s + importeLinea(l), 0);
+const totalPiezas = () => carrito.reduce((s, l) => s + l.cantidad, 0);
+const cuentaDe = id => carrito.filter(l => l.oferta_id === id)
+                              .reduce((s, l) => s + l.cantidad, 0);
+
+// ------------------------------------------------------------- modalidad
+
+function pintarModos() {
+  for (const b of $("modos").querySelectorAll("button"))
+    b.setAttribute("aria-pressed", String(b.dataset.modo === modalidad));
+}
+
+function elegirModo(nuevo) {
+  if (nuevo === modalidad) return;
+  // Los precios y los productos cambian entre modalidades, así que el
+  // carrito no se puede arrastrar de una a otra.
+  if (carrito.length &&
+      !confirm("Cambiar de modalidad vacía tu pedido. ¿Le seguimos?")) return;
+  modalidad = nuevo;
+  carrito = [];
+  guardar();
+  pintarModos();
+  cerrarHoja();
+  cargar();
+}
+
+function preguntarModo() {
+  const hoja = $("hoja");
+  hoja.textContent = "";
+  hoja.appendChild(elem("h2", "", "¿Cómo va a ser?"));
+  hoja.appendChild(elem("p", "sub", "Los precios y el menú cambian según la opción."));
+
+  for (const [modo, texto, pista] of [
+    ["aqui", "Para comer aquí", "Tacos, consomé y bebidas en la mesa"],
+    ["llevar", "Para llevar", "Carne por kilo, consomé de litro y más"],
+  ]) {
+    const b = document.createElement("button");
+    b.className = "modoGrande";
+    b.type = "button";
+    b.textContent = texto;
+    b.appendChild(elem("small", "", pista));
+    b.addEventListener("click", () => {
+      modalidad = modo;
+      guardar();
+      pintarModos();
+      cerrarHoja();
+      cargar();
+    });
+    hoja.appendChild(b);
+  }
+
+  hoja.classList.add("rojo");
+  $("telon").classList.add("arriba");
+  $("telon").hidden = false;
+  document.body.classList.add("sin-scroll");
+}
+
+// ------------------------------------------------------------- menú
+
+function pintarMenu(categorias) {
+  const menu = $("menu"), tabs = $("pestanas");
+  menu.textContent = "";
+  tabs.textContent = "";
+  OFERTAS = {};
+
+  if (!categorias.length) {
+    menu.innerHTML = '<p class="aviso">Todavía no hay productos en esta modalidad.</p>';
+    return;
+  }
+
+  for (const cat of categorias) {
+    const id = "cat-" + cat.id;
+    const tab = document.createElement("a");
+    tab.href = "#" + id;
+    tab.textContent = cat.nombre;
+    tabs.appendChild(tab);
+
+    const titulo = document.createElement("h2");
+    titulo.className = "rotulo";
+    titulo.id = id;
+    titulo.textContent = cat.nombre;
+    menu.appendChild(titulo);
+
+    for (const p of cat.productos) {
+      OFERTAS[p.oferta_id] = p;
+      menu.appendChild(filaProducto(p));
+    }
+  }
+
+  // Lo que ya no exista en esta modalidad o se haya agotado, se cae solo.
+  carrito = carrito.filter(l => OFERTAS[l.oferta_id] && OFERTAS[l.oferta_id].disponible);
+  guardar();
+
+  refrescarPasos();
+  refrescarBarra();
+  marcarPestanaVisible();
+}
+
+function filaProducto(p) {
+  const fila = document.createElement("div");
+  fila.className = "fila" + (p.disponible ? "" : " agotado");
+
+  const info = document.createElement("div");
+  info.className = "info";
+  const nombre = elem("p", "nombre", p.nombre);
+  if (!p.disponible) nombre.appendChild(elem("span", "sello", "Hoy no hay"));
+  info.appendChild(nombre);
+  if (p.descripcion) info.appendChild(elem("p", "desc", p.descripcion));
+  fila.appendChild(info);
+
+  const derecha = document.createElement("div");
+  derecha.className = "derecha";
+  const precio = elem("span", "precio", pesos(p.precio_centavos));
+  if (UNIDAD[p.unidad]) precio.appendChild(elem("span", "unidad", UNIDAD[p.unidad]));
+  derecha.appendChild(precio);
+
+  if (p.disponible) {
+    const paso = document.createElement("div");
+    paso.className = "paso";
+    paso.dataset.oferta = p.oferta_id;
+    derecha.appendChild(paso);
+  }
+
+  fila.appendChild(derecha);
+  return fila;
+}
+
+function refrescarPasos() {
+  for (const paso of document.querySelectorAll(".paso[data-oferta]")) {
+    const id = Number(paso.dataset.oferta);
+    const p = OFERTAS[id];
+    if (!p) continue;
+    const n = cuentaDe(id);
+    paso.textContent = "";
+
+    if (p.grupos.length) {
+      // Con opciones cada taco puede ir distinto, así que el menos no aplica:
+      // se quita desde la hoja del pedido, donde se ve qué lleva cada uno.
+      if (n > 0) paso.appendChild(elem("span", "cuenta", String(n)));
+      paso.appendChild(boton("+", "Configurar " + p.nombre, () => abrirOpciones(p)));
+    } else {
+      if (n > 0) {
+        paso.appendChild(boton("−", "Quitar un " + p.nombre, () => agregar(id, [], -1)));
+        paso.appendChild(elem("span", "cuenta", String(n)));
+      }
+      paso.appendChild(boton("+", "Agregar un " + p.nombre, () => agregar(id, [], 1)));
+    }
+  }
+}
+
+function boton(texto, etiqueta, alTocar) {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.textContent = texto;
+  b.setAttribute("aria-label", etiqueta);
+  b.addEventListener("click", alTocar);
+  return b;
+}
+
+function elem(tag, clase, texto) {
+  const e = document.createElement(tag);
+  if (clase) e.className = clase;
+  if (texto) e.textContent = texto;
+  return e;
+}
+
+function refrescarBarra() {
+  const piezas = totalPiezas();
+  $("barra").hidden = piezas === 0;
+  document.body.classList.toggle("con-barra", piezas > 0);
+  if (!piezas) return;
+  $("barraResumen").textContent =
+    (piezas === 1 ? "1 producto" : piezas + " productos") + " · Ver pedido";
+  $("barraTotal").textContent = pesos(totalCentavos());
+}
+
+// ------------------------------------------------------------- opciones
+
+function abrirOpciones(p) {
+  const escogidas = {};   // grupo_id -> [opcion_id]
+  abrirTelon(false);
+
+  const hoja = $("hoja");
+
+  function repintar() {
+    hoja.textContent = "";
+    hoja.appendChild(elem("h2", "", p.nombre));
+    hoja.appendChild(elem("p", "sub",
+      pesos(p.precio_centavos) + (UNIDAD[p.unidad] ? " " + UNIDAD[p.unidad] : "")));
+
+    for (const g of p.grupos) {
+      const bloque = document.createElement("div");
+      bloque.className = "grupo";
+      bloque.appendChild(elem("h3", "", g.nombre));
+
+      const tope = g.tipo === "una" ? 1 : g.max_selec;
+      bloque.appendChild(elem("p", "pista",
+        g.tipo === "una"
+          ? (g.obligatorio ? "Escoge una" : "Escoge una, si quieres")
+          : (tope ? "Hasta " + tope : "Las que quieras")));
+
+      for (const o of g.opciones) {
+        const puestas = escogidas[g.id] || [];
+        const puesta = puestas.includes(o.id);
+
+        const fila = document.createElement("label");
+        fila.className = "opcion" + (puesta ? " puesta" : "");
+
+        const input = document.createElement("input");
+        input.type = g.tipo === "una" ? "radio" : "checkbox";
+        input.name = "g" + g.id;
+        input.checked = puesta;
+        input.addEventListener("change", () => {
+          if (g.tipo === "una") {
+            escogidas[g.id] = input.checked ? [o.id] : [];
+          } else {
+            const lista = escogidas[g.id] || [];
+            if (input.checked) {
+              if (tope && lista.length >= tope) { input.checked = false; return; }
+              escogidas[g.id] = [...lista, o.id];
+            } else {
+              escogidas[g.id] = lista.filter(x => x !== o.id);
+            }
+          }
+          repintar();
+        });
+
+        fila.appendChild(input);
+        fila.appendChild(elem("span", "etiqueta", o.nombre));
+        if (o.precio_extra_centavos)
+          fila.appendChild(elem("span", "extra", "+" + pesos(o.precio_extra_centavos)));
+        bloque.appendChild(fila);
+      }
+      hoja.appendChild(bloque);
+    }
+
+    const todas = Object.values(escogidas).flat();
+    const extras = todas.reduce((s, id) => s + (extraDe(p, id) || 0), 0);
+    const falta = p.grupos.find(g => g.obligatorio && !(escogidas[g.id] || []).length);
+
+    const listo = document.createElement("button");
+    listo.className = "principal";
+    listo.type = "button";
+    listo.disabled = Boolean(falta);
+    listo.textContent = falta
+      ? "Escoge " + falta.nombre.toLowerCase()
+      : "Agregar · " + pesos(p.precio_centavos + extras);
+    listo.addEventListener("click", () => {
+      agregar(p.oferta_id, todas, 1);
+      cerrarHoja();
+    });
+    hoja.appendChild(listo);
+
+    const cancelar = document.createElement("button");
+    cancelar.className = "secundario";
+    cancelar.type = "button";
+    cancelar.textContent = "Cancelar";
+    cancelar.addEventListener("click", cerrarHoja);
+    hoja.appendChild(cancelar);
+  }
+
+  repintar();
+}
+
+// ------------------------------------------------------------- hoja del pedido
+
+function abrirTelon(arriba) {
+  $("hoja").classList.remove("rojo");
+  $("telon").classList.toggle("arriba", Boolean(arriba));
+  $("telon").hidden = false;
+  document.body.classList.add("sin-scroll");
+}
+
+function cerrarHoja() {
+  $("hoja").classList.remove("rojo");
+  $("telon").hidden = true;
+  $("telon").classList.remove("arriba");
+  document.body.classList.remove("sin-scroll");
+}
+
+function abrirPedido() {
+  abrirTelon(false);
+  pintarPedido();
+}
+
+function pintarPedido() {
+  const hoja = $("hoja");
+  if (!carrito.length) { cerrarHoja(); return; }
+
+  hoja.textContent = "";
+  hoja.appendChild(elem("h2", "", "Tu pedido"));
+  const mesa = leerMesa();
+  hoja.appendChild(elem("p", "sub",
+    NOMBRE_MODO[modalidad] + (mesa ? " · Mesa " + mesa : "")));
+
+  for (const l of carrito) {
+    const p = OFERTAS[l.oferta_id];
+    if (!p) continue;
+
+    const r = document.createElement("div");
+    r.className = "renglon";
+
+    const paso = document.createElement("div");
+    paso.className = "paso";
+    paso.appendChild(boton("−", "Quitar uno", () => {
+      agregar(l.oferta_id, l.opciones, -1);
+      pintarPedido();
+    }));
+    paso.appendChild(elem("span", "cuenta", String(l.cantidad)));
+    paso.appendChild(boton("+", "Agregar uno", () => {
+      agregar(l.oferta_id, l.opciones, 1);
+      pintarPedido();
+    }));
+    r.appendChild(paso);
+
+    const nombre = elem("div", "nombre", p.nombre);
+    const detalles = l.opciones.map(id => nombreOpcion(p, id)).filter(Boolean);
+    if (detalles.length) nombre.appendChild(elem("div", "detalle", detalles.join(" · ")));
+    r.appendChild(nombre);
+
+    r.appendChild(elem("div", "importe", pesos(importeLinea(l))));
+    hoja.appendChild(r);
+  }
+
+  const tot = document.createElement("div");
+  tot.className = "totales";
+  tot.appendChild(elem("span", "", "Total"));
+  tot.appendChild(elem("span", "granTotal", pesos(totalCentavos())));
+  hoja.appendChild(tot);
+
+  if (modalidad === "aqui" && !mesa) {
+    const campo = document.createElement("div");
+    campo.className = "campo";
+    campo.id = "campoMesa";
+    campo.appendChild(elem("label", "", "¿En qué mesa estás?"));
+    const input = document.createElement("input");
+    input.id = "inputMesa";
+    input.type = "text";
+    input.inputMode = "numeric";
+    input.placeholder = "Número de mesa";
+    input.addEventListener("input", () => {
+      campo.classList.remove("malo");
+      const e = campo.querySelector(".error");
+      if (e) e.remove();
+    });
+    campo.appendChild(input);
+    hoja.appendChild(campo);
+  }
+
+  const nota = document.createElement("div");
+  nota.className = "campo";
+  nota.appendChild(elem("label", "", "¿Algo que debamos saber? (opcional)"));
+  const ta = document.createElement("textarea");
+  ta.id = "inputNota";
+  ta.maxLength = 300;
+  ta.placeholder = "Sin cebolla, salsa aparte…";
+  nota.appendChild(ta);
+  hoja.appendChild(nota);
+
+  const alerta = elem("p", "alerta", "");
+  alerta.id = "alerta";
+  alerta.hidden = true;
+  hoja.appendChild(alerta);
+
+  const enviar = document.createElement("button");
+  enviar.className = "principal";
+  enviar.id = "btnEnviar";
+  enviar.type = "button";
+  enviar.textContent = "Enviar pedido · " + pesos(totalCentavos());
+  enviar.addEventListener("click", enviarPedido);
+  hoja.appendChild(enviar);
+
+  const seguir = document.createElement("button");
+  seguir.className = "secundario";
+  seguir.type = "button";
+  seguir.textContent = "Seguir viendo el menú";
+  seguir.addEventListener("click", cerrarHoja);
+  hoja.appendChild(seguir);
+}
+
+// ------------------------------------------------------------- enviar
+
+async function enviarPedido() {
+  if (enviando) return;
+
+  let mesa = leerMesa();
+  if (modalidad === "aqui" && !mesa) {
+    const input = $("inputMesa");
+    mesa = (input.value || "").trim();
+    if (!mesa) {
+      const campo = $("campoMesa");
+      campo.classList.add("malo");
+      if (!campo.querySelector(".error"))
+        campo.appendChild(elem("p", "error", "Escribe tu número de mesa."));
+      input.focus();
+      return;
+    }
+  }
+
+  const boton = $("btnEnviar"), alerta = $("alerta");
+  enviando = true;
+  boton.disabled = true;
+  boton.textContent = "Enviando…";
+  alerta.hidden = true;
+
+  try {
+    // Demo sin servidor: se simula la respuesta de POST /pedidos.
+    // En app.py aquí se valida disponibilidad y se calcula el total.
+    await new Promise(r => setTimeout(r, 450));
+    const folio = Number(localStorage.getItem("riohondo:demo-folio") || 0) + 1;
+    localStorage.setItem("riohondo:demo-folio", String(folio));
+    const r = {
+      ok: true, status: 201,
+      json: async () => ({
+        pedido_id: folio, modalidad, mesa,
+        total_centavos: totalCentavos(), estado: "recibido",
+      }),
+    };
+
+    if (r.status === 409) { manejarConflicto((await r.json()).detail || {}); return; }
+    if (!r.ok) throw new Error(r.status);
+    confirmar(await r.json());
+  } catch (err) {
+    alerta.textContent = "No se pudo enviar. Revisa tu conexión e inténtalo otra vez.";
+    alerta.hidden = false;
+  } finally {
+    enviando = false;
+    const b = $("btnEnviar");
+    if (b) { b.disabled = false; b.textContent = "Enviar pedido · " + pesos(totalCentavos()); }
+  }
+}
+
+function manejarConflicto(detalle) {
+  // Se acabó algo mientras el cliente decidía. Le decimos exactamente qué,
+  // se lo quitamos del carrito y le dejamos el resto intacto.
+  const fuera = new Set([
+    ...(detalle.agotados || []).map(a => a.oferta_id),
+    ...(detalle.desconocidos || []),
+  ]);
+  const nombres = (detalle.agotados || []).map(a => a.nombre);
+  if (fuera.size) carrito = carrito.filter(l => !fuera.has(l.oferta_id));
+  guardar();
+
+  cargar().then(() => {
+    if (!carrito.length) { cerrarHoja(); return; }
+    pintarPedido();
+    const alerta = $("alerta");
+    alerta.textContent = nombres.length
+      ? "Se acabó: " + nombres.join(", ") + ". Lo quitamos de tu pedido."
+      : (detalle.mensaje || "Algo cambió en el menú. Revisa tu pedido.");
+    alerta.hidden = false;
+  });
+}
+
+function confirmar(res) {
+  carrito = [];
+  guardar();
+  refrescarPasos();
+  refrescarBarra();
+
+  const hoja = $("hoja");
+  hoja.textContent = "";
+  hoja.appendChild(elem("h2", "", "Pedido enviado"));
+  hoja.appendChild(elem("p", "sub", "Ya lo está viendo el taquero."));
+  hoja.appendChild(elem("p", "folio", "#" + res.pedido_id));
+  hoja.appendChild(elem("p", "sub",
+    NOMBRE_MODO[res.modalidad] + (res.mesa ? " · Mesa " + res.mesa : "") +
+    " · " + pesos(res.total_centavos) + " · se paga con el mesero"));
+
+  const otro = document.createElement("button");
+  otro.className = "principal";
+  otro.type = "button";
+  otro.textContent = "Pedir algo más";
+  otro.addEventListener("click", cerrarHoja);
+  hoja.appendChild(otro);
+}
+
+// ------------------------------------------------------------- carga
+
+function marcarPestanaVisible() {
+  const titulos = document.querySelectorAll(".rotulo");
+  const tabs = document.querySelectorAll(".pestanas a");
+  if (!titulos.length || !("IntersectionObserver" in window)) return;
+
+  const obs = new IntersectionObserver(entradas => {
+    for (const e of entradas) {
+      if (!e.isIntersecting) continue;
+      tabs.forEach(t => t.classList.toggle(
+        "activa", t.getAttribute("href") === "#" + e.target.id));
+    }
+  }, { rootMargin: "-62px 0px -75% 0px" });
+
+  titulos.forEach(t => obs.observe(t));
+}
+
+const MENUS = {"aqui":[{"id":1,"nombre":"Tacos","productos":[{"oferta_id":1,"producto_id":3,"nombre":"Taco de barbacoa","descripcion":"","unidad":"pieza","precio_centavos":3000,"imagen":null,"disponible":true,"grupos":[]},{"oferta_id":2,"producto_id":1,"nombre":"Taco de cabeza","descripcion":"","unidad":"pieza","precio_centavos":3000,"imagen":null,"disponible":true,"grupos":[]},{"oferta_id":3,"producto_id":2,"nombre":"Taco de pancita","descripcion":"","unidad":"pieza","precio_centavos":3000,"imagen":null,"disponible":true,"grupos":[]},{"oferta_id":4,"producto_id":4,"nombre":"Taco de pata","descripcion":"","unidad":"pieza","precio_centavos":3000,"imagen":null,"disponible":true,"grupos":[]}]},{"id":2,"nombre":"Consomé","productos":[{"oferta_id":5,"producto_id":5,"nombre":"Consomé chico","descripcion":"","unidad":"pieza","precio_centavos":3000,"imagen":null,"disponible":true,"grupos":[{"id":1,"nombre":"Arroz y garbanzo","tipo":"una","obligatorio":true,"max_selec":null,"opciones":[{"id":1,"nombre":"Con arroz y garbanzo","precio_extra_centavos":0},{"id":2,"nombre":"Sin arroz y garbanzo","precio_extra_centavos":0}]},{"id":2,"nombre":"Carne adicional","tipo":"varias","obligatorio":false,"max_selec":4,"opciones":[{"id":3,"nombre":"Cabeza","precio_extra_centavos":3000},{"id":4,"nombre":"Pancita","precio_extra_centavos":3000},{"id":5,"nombre":"Barbacoa","precio_extra_centavos":3000},{"id":6,"nombre":"Pata","precio_extra_centavos":3000}]}]},{"oferta_id":6,"producto_id":6,"nombre":"Consomé grande","descripcion":"","unidad":"pieza","precio_centavos":4500,"imagen":null,"disponible":true,"grupos":[{"id":1,"nombre":"Arroz y garbanzo","tipo":"una","obligatorio":true,"max_selec":null,"opciones":[{"id":1,"nombre":"Con arroz y garbanzo","precio_extra_centavos":0},{"id":2,"nombre":"Sin arroz y garbanzo","precio_extra_centavos":0}]},{"id":2,"nombre":"Carne adicional","tipo":"varias","obligatorio":false,"max_selec":4,"opciones":[{"id":3,"nombre":"Cabeza","precio_extra_centavos":3000},{"id":4,"nombre":"Pancita","precio_extra_centavos":3000},{"id":5,"nombre":"Barbacoa","precio_extra_centavos":3000},{"id":6,"nombre":"Pata","precio_extra_centavos":3000}]}]}]},{"id":3,"nombre":"Caldo de pancita","productos":[{"oferta_id":7,"producto_id":8,"nombre":"Pancita de res en caldo, chica","descripcion":"","unidad":"pieza","precio_centavos":4500,"imagen":null,"disponible":true,"grupos":[]},{"oferta_id":8,"producto_id":9,"nombre":"Pancita de res en caldo, grande","descripcion":"","unidad":"pieza","precio_centavos":7000,"imagen":null,"disponible":true,"grupos":[]}]},{"id":4,"nombre":"Mixiotes","productos":[{"oferta_id":9,"producto_id":10,"nombre":"Mixiote de pollo","descripcion":"","unidad":"pieza","precio_centavos":8000,"imagen":null,"disponible":true,"grupos":[]},{"oferta_id":10,"producto_id":11,"nombre":"Mixiote de puerco","descripcion":"","unidad":"pieza","precio_centavos":8000,"imagen":null,"disponible":true,"grupos":[]}]},{"id":5,"nombre":"Para acompañar","productos":[{"oferta_id":11,"producto_id":16,"nombre":"Pan","descripcion":"","unidad":"pieza","precio_centavos":1500,"imagen":null,"disponible":true,"grupos":[]}]},{"id":6,"nombre":"Refrescos","productos":[{"oferta_id":12,"producto_id":17,"nombre":"Coca Cola","descripcion":"","unidad":"pieza","precio_centavos":3000,"imagen":null,"disponible":true,"grupos":[]},{"oferta_id":13,"producto_id":18,"nombre":"Boing","descripcion":"","unidad":"pieza","precio_centavos":3000,"imagen":null,"disponible":true,"grupos":[]}]},{"id":7,"nombre":"Café y té","productos":[{"oferta_id":14,"producto_id":19,"nombre":"Café","descripcion":"","unidad":"pieza","precio_centavos":2000,"imagen":null,"disponible":true,"grupos":[]},{"oferta_id":15,"producto_id":20,"nombre":"Té","descripcion":"","unidad":"pieza","precio_centavos":2000,"imagen":null,"disponible":true,"grupos":[]}]},{"id":8,"nombre":"Cervezas","productos":[{"oferta_id":16,"producto_id":21,"nombre":"Cerveza","descripcion":"","unidad":"pieza","precio_centavos":4000,"imagen":null,"disponible":true,"grupos":[]}]}],"llevar":[{"id":9,"nombre":"Carne por kilo","productos":[{"oferta_id":17,"producto_id":12,"nombre":"Maciza por kilo","descripcion":"","unidad":"kilo","precio_centavos":60000,"imagen":null,"disponible":true,"grupos":[{"id":3,"nombre":"Salsa","tipo":"una","obligatorio":true,"max_selec":null,"opciones":[{"id":7,"nombre":"Verde","precio_extra_centavos":0},{"id":8,"nombre":"Roja","precio_extra_centavos":0}]},{"id":4,"nombre":"Para acompañar","tipo":"varias","obligatorio":false,"max_selec":null,"opciones":[{"id":9,"nombre":"Cilantro","precio_extra_centavos":0},{"id":10,"nombre":"Cebolla","precio_extra_centavos":0},{"id":11,"nombre":"Limones","precio_extra_centavos":0}]}]},{"oferta_id":18,"producto_id":13,"nombre":"Lengua por kilo","descripcion":"","unidad":"kilo","precio_centavos":60000,"imagen":null,"disponible":true,"grupos":[{"id":3,"nombre":"Salsa","tipo":"una","obligatorio":true,"max_selec":null,"opciones":[{"id":7,"nombre":"Verde","precio_extra_centavos":0},{"id":8,"nombre":"Roja","precio_extra_centavos":0}]},{"id":4,"nombre":"Para acompañar","tipo":"varias","obligatorio":false,"max_selec":null,"opciones":[{"id":9,"nombre":"Cilantro","precio_extra_centavos":0},{"id":10,"nombre":"Cebolla","precio_extra_centavos":0},{"id":11,"nombre":"Limones","precio_extra_centavos":0}]}]},{"oferta_id":19,"producto_id":14,"nombre":"Escogida por kilo","descripcion":"","unidad":"kilo","precio_centavos":60000,"imagen":null,"disponible":true,"grupos":[{"id":3,"nombre":"Salsa","tipo":"una","obligatorio":true,"max_selec":null,"opciones":[{"id":7,"nombre":"Verde","precio_extra_centavos":0},{"id":8,"nombre":"Roja","precio_extra_centavos":0}]},{"id":4,"nombre":"Para acompañar","tipo":"varias","obligatorio":false,"max_selec":null,"opciones":[{"id":9,"nombre":"Cilantro","precio_extra_centavos":0},{"id":10,"nombre":"Cebolla","precio_extra_centavos":0},{"id":11,"nombre":"Limones","precio_extra_centavos":0}]}]},{"oferta_id":20,"producto_id":15,"nombre":"Surtida por kilo","descripcion":"","unidad":"kilo","precio_centavos":50000,"imagen":null,"disponible":true,"grupos":[{"id":3,"nombre":"Salsa","tipo":"una","obligatorio":true,"max_selec":null,"opciones":[{"id":7,"nombre":"Verde","precio_extra_centavos":0},{"id":8,"nombre":"Roja","precio_extra_centavos":0}]},{"id":4,"nombre":"Para acompañar","tipo":"varias","obligatorio":false,"max_selec":null,"opciones":[{"id":9,"nombre":"Cilantro","precio_extra_centavos":0},{"id":10,"nombre":"Cebolla","precio_extra_centavos":0},{"id":11,"nombre":"Limones","precio_extra_centavos":0}]}]}]},{"id":10,"nombre":"Carne por taco","productos":[{"oferta_id":21,"producto_id":3,"nombre":"Taco de barbacoa","descripcion":"","unidad":"pieza","precio_centavos":3000,"imagen":null,"disponible":true,"grupos":[]},{"oferta_id":22,"producto_id":1,"nombre":"Taco de cabeza","descripcion":"","unidad":"pieza","precio_centavos":3000,"imagen":null,"disponible":true,"grupos":[]},{"oferta_id":23,"producto_id":2,"nombre":"Taco de pancita","descripcion":"","unidad":"pieza","precio_centavos":3000,"imagen":null,"disponible":true,"grupos":[]},{"oferta_id":24,"producto_id":4,"nombre":"Taco de pata","descripcion":"","unidad":"pieza","precio_centavos":3000,"imagen":null,"disponible":true,"grupos":[]}]},{"id":11,"nombre":"Consomé","productos":[{"oferta_id":25,"producto_id":5,"nombre":"Consomé chico","descripcion":"","unidad":"pieza","precio_centavos":3000,"imagen":null,"disponible":true,"grupos":[{"id":1,"nombre":"Arroz y garbanzo","tipo":"una","obligatorio":true,"max_selec":null,"opciones":[{"id":1,"nombre":"Con arroz y garbanzo","precio_extra_centavos":0},{"id":2,"nombre":"Sin arroz y garbanzo","precio_extra_centavos":0}]},{"id":2,"nombre":"Carne adicional","tipo":"varias","obligatorio":false,"max_selec":4,"opciones":[{"id":3,"nombre":"Cabeza","precio_extra_centavos":3000},{"id":4,"nombre":"Pancita","precio_extra_centavos":3000},{"id":5,"nombre":"Barbacoa","precio_extra_centavos":3000},{"id":6,"nombre":"Pata","precio_extra_centavos":3000}]}]},{"oferta_id":26,"producto_id":6,"nombre":"Consomé grande","descripcion":"","unidad":"pieza","precio_centavos":4500,"imagen":null,"disponible":true,"grupos":[{"id":1,"nombre":"Arroz y garbanzo","tipo":"una","obligatorio":true,"max_selec":null,"opciones":[{"id":1,"nombre":"Con arroz y garbanzo","precio_extra_centavos":0},{"id":2,"nombre":"Sin arroz y garbanzo","precio_extra_centavos":0}]},{"id":2,"nombre":"Carne adicional","tipo":"varias","obligatorio":false,"max_selec":4,"opciones":[{"id":3,"nombre":"Cabeza","precio_extra_centavos":3000},{"id":4,"nombre":"Pancita","precio_extra_centavos":3000},{"id":5,"nombre":"Barbacoa","precio_extra_centavos":3000},{"id":6,"nombre":"Pata","precio_extra_centavos":3000}]}]},{"oferta_id":27,"producto_id":7,"nombre":"Consomé de litro","descripcion":"","unidad":"litro","precio_centavos":8000,"imagen":null,"disponible":true,"grupos":[{"id":1,"nombre":"Arroz y garbanzo","tipo":"una","obligatorio":true,"max_selec":null,"opciones":[{"id":1,"nombre":"Con arroz y garbanzo","precio_extra_centavos":0},{"id":2,"nombre":"Sin arroz y garbanzo","precio_extra_centavos":0}]},{"id":2,"nombre":"Carne adicional","tipo":"varias","obligatorio":false,"max_selec":4,"opciones":[{"id":3,"nombre":"Cabeza","precio_extra_centavos":3000},{"id":4,"nombre":"Pancita","precio_extra_centavos":3000},{"id":5,"nombre":"Barbacoa","precio_extra_centavos":3000},{"id":6,"nombre":"Pata","precio_extra_centavos":3000}]}]}]},{"id":12,"nombre":"Caldo de pancita","productos":[{"oferta_id":28,"producto_id":8,"nombre":"Pancita de res en caldo, chica","descripcion":"","unidad":"pieza","precio_centavos":4500,"imagen":null,"disponible":true,"grupos":[]},{"oferta_id":29,"producto_id":9,"nombre":"Pancita de res en caldo, grande","descripcion":"","unidad":"pieza","precio_centavos":7000,"imagen":null,"disponible":true,"grupos":[]}]},{"id":13,"nombre":"Mixiotes","productos":[{"oferta_id":30,"producto_id":10,"nombre":"Mixiote de pollo","descripcion":"","unidad":"pieza","precio_centavos":8000,"imagen":null,"disponible":true,"grupos":[]},{"oferta_id":31,"producto_id":11,"nombre":"Mixiote de puerco","descripcion":"","unidad":"pieza","precio_centavos":8000,"imagen":null,"disponible":true,"grupos":[]}]},{"id":14,"nombre":"Para acompañar","productos":[{"oferta_id":32,"producto_id":16,"nombre":"Pan","descripcion":"","unidad":"pieza","precio_centavos":1500,"imagen":null,"disponible":true,"grupos":[]}]},{"id":15,"nombre":"Refrescos","productos":[{"oferta_id":33,"producto_id":17,"nombre":"Coca Cola","descripcion":"","unidad":"pieza","precio_centavos":3000,"imagen":null,"disponible":true,"grupos":[]},{"oferta_id":34,"producto_id":18,"nombre":"Boing","descripcion":"","unidad":"pieza","precio_centavos":3000,"imagen":null,"disponible":true,"grupos":[]}]}]};
+
+async function cargar() {
+  if (!modalidad) return;
+  pintarMenu(MENUS[modalidad] || []);
+}
+
+$("barra").addEventListener("click", abrirPedido);
+$("telon").addEventListener("click", e => { if (e.target === $("telon")) cerrarHoja(); });
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && !$("telon").hidden) cerrarHoja();
+});
+for (const b of $("modos").querySelectorAll("button"))
+  b.addEventListener("click", () => elegirModo(b.dataset.modo));
+
+pintarMesa();
+recuperar();
+pintarModos();
+if (modalidad) cargar(); else preguntarModo();
+</script>
+
+</body>
+</html>
