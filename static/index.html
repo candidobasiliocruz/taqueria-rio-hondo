@@ -32,6 +32,8 @@
     line-height: 1.4;
     -webkit-text-size-adjust: 100%;
   }
+  body.con-barra { padding-bottom: 96px; }
+  body.sin-scroll { overflow: hidden; }
 
   .encabezado {
     background: var(--penca);
@@ -107,23 +109,19 @@
 
   .fila {
     display: flex;
-    align-items: baseline;
+    align-items: flex-start;
     gap: 16px;
-    padding: 17px 20px;
+    padding: 15px 20px;
     border-bottom: 1px solid var(--linea);
   }
-  .fila .nombre {
-    flex: 1;
-    font-size: 17px;
-    font-weight: 600;
-    margin: 0;
-  }
-  .fila .desc {
-    flex-basis: 100%;
-    order: 3;
-    margin: 5px 0 0;
-    color: var(--ceniza);
-    font-size: 14px;
+  .fila .info { flex: 1; min-width: 0; }
+  .fila .nombre { font-size: 17px; font-weight: 600; margin: 0; }
+  .fila .desc { margin: 4px 0 0; color: var(--ceniza); font-size: 14px; }
+  .fila .derecha {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
   }
   .fila .precio {
     font-family: var(--rotulo);
@@ -132,11 +130,11 @@
     color: var(--guajillo);
     letter-spacing: 0.01em;
     white-space: nowrap;
+    line-height: 1.1;
   }
 
-  .fila.agotado .nombre,
-  .fila.agotado .precio { color: var(--ceniza); }
-  .fila.agotado .precio { text-decoration: line-through; }
+  .fila.agotado .nombre { color: var(--ceniza); }
+  .fila.agotado .precio { color: var(--ceniza); text-decoration: line-through; }
   .sello {
     display: inline-block;
     margin-left: 9px;
@@ -151,27 +149,186 @@
     vertical-align: 2px;
   }
 
-  .aviso {
-    padding: 40px 20px;
-    text-align: center;
-    color: var(--ceniza);
-  }
-  .aviso button {
-    margin-top: 14px;
-    padding: 11px 22px;
-    border: 1.5px solid var(--tinta);
+  .paso { display: flex; align-items: center; gap: 4px; }
+  .paso button {
+    width: 40px;
+    height: 40px;
+    border: 1.5px solid var(--penca);
     border-radius: 999px;
-    background: none;
+    background: var(--papel);
+    color: var(--penca);
+    font-family: var(--texto);
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .paso button:active { background: var(--penca); color: var(--papel); }
+  .paso button:focus-visible { outline: 2px solid var(--tinta); outline-offset: 2px; }
+  .paso .cuenta {
+    min-width: 26px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .barra {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    padding-bottom: max(14px, env(safe-area-inset-bottom));
+    background: var(--penca);
+    color: var(--papel);
+    border: none;
+    width: 100%;
+    font-family: var(--texto);
+    text-align: left;
+    cursor: pointer;
+  }
+  .barra[hidden] { display: none; }
+  .barra .resumen { flex: 1; font-size: 15px; font-weight: 600; }
+  .barra .total {
+    font-family: var(--rotulo);
+    font-size: 24px;
+    letter-spacing: 0.02em;
+  }
+
+  .telon {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    display: flex;
+    align-items: flex-end;
+    background: rgba(28, 24, 21, 0.5);
+  }
+  .telon[hidden] { display: none; }
+  .hoja {
+    width: 100%;
+    max-height: 88vh;
+    overflow-y: auto;
+    background: var(--papel);
+    border-radius: 18px 18px 0 0;
+    padding: 22px 20px;
+    padding-bottom: max(22px, env(safe-area-inset-bottom));
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .hoja { animation: subir .22s ease-out; }
+    @keyframes subir { from { transform: translateY(14px); } }
+  }
+  .hoja h2 {
+    font-family: var(--rotulo);
+    font-size: 26px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin: 0 0 4px;
+  }
+  .hoja .sub { margin: 0 0 18px; color: var(--ceniza); font-size: 15px; }
+
+  .renglon {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--linea);
+  }
+  .renglon .nombre { flex: 1; font-weight: 600; font-size: 16px; }
+  .renglon .sub-precio { color: var(--ceniza); font-size: 13px; font-weight: 400; }
+  .renglon .importe {
+    font-family: var(--rotulo);
+    font-size: 20px;
+    min-width: 64px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .totales {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 18px 0 4px;
+  }
+  .totales span:first-child { font-weight: 600; }
+  .totales .granTotal {
+    font-family: var(--rotulo);
+    font-size: 32px;
+    color: var(--guajillo);
+  }
+
+  .campo { margin-top: 14px; }
+  .campo label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .campo input, .campo textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--linea);
+    border-radius: 10px;
+    background: #fff;
     color: var(--tinta);
     font-family: var(--texto);
-    font-size: 15px;
+    font-size: 16px;
+  }
+  .campo input:focus, .campo textarea:focus {
+    outline: none;
+    border-color: var(--penca);
+  }
+  .campo textarea { resize: vertical; min-height: 62px; }
+  .campo .error { margin: 6px 0 0; color: var(--guajillo); font-size: 14px; font-weight: 600; }
+  .campo.malo input { border-color: var(--guajillo); }
+
+  .principal, .secundario {
+    width: 100%;
+    padding: 16px;
+    margin-top: 16px;
+    border-radius: 12px;
+    font-family: var(--texto);
+    font-size: 17px;
     font-weight: 600;
     cursor: pointer;
+  }
+  .principal { border: none; background: var(--guajillo); color: #fff; }
+  .principal:disabled { background: var(--ceniza); cursor: default; }
+  .secundario {
+    border: 1.5px solid var(--linea);
+    background: none;
+    color: var(--tinta);
+    margin-top: 8px;
+  }
+
+  .alerta {
+    margin: 14px 0 0;
+    padding: 14px;
+    border: 1.5px solid var(--guajillo);
+    border-radius: 10px;
+    color: var(--guajillo);
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .alerta[hidden] { display: none; }
+
+  .folio {
+    font-family: var(--rotulo);
+    font-size: 64px;
+    color: var(--penca);
+    margin: 8px 0 0;
+    line-height: 1;
+  }
+
+  .aviso { padding: 40px 20px; text-align: center; color: var(--ceniza); }
+  .aviso button {
+    margin-top: 14px; padding: 11px 22px;
+    border: 1.5px solid var(--tinta); border-radius: 999px;
+    background: none; color: var(--tinta);
+    font-family: var(--texto); font-size: 15px; font-weight: 600; cursor: pointer;
   }
 
   .pie {
     padding: 26px 20px 40px;
-    padding-bottom: max(40px, env(safe-area-inset-bottom));
     color: var(--ceniza);
     font-size: 14px;
     text-align: center;
@@ -191,29 +348,94 @@
   <p class="aviso">Cargando el menú…</p>
 </main>
 
-<p class="pie">Los precios incluyen IVA. Por ahora, pide con el mesero.</p>
+<p class="pie">Los precios incluyen IVA.</p>
+
+<button class="barra" id="barra" type="button" hidden>
+  <span class="resumen" id="barraResumen"></span>
+  <span class="total" id="barraTotal"></span>
+</button>
+
+<div class="telon" id="telon" hidden>
+  <div class="hoja" id="hoja" role="dialog" aria-modal="true" aria-label="Tu pedido"></div>
+</div>
 
 <script>
+const LLAVE = "riohondo:carrito";
+
+let CATALOGO = {};        // producto_id -> producto
+let carrito = {};         // producto_id -> cantidad
+let enviando = false;
+
 const pesos = c => "$" + (c / 100).toFixed(c % 100 ? 2 : 0);
+const $ = id => document.getElementById(id);
+
+// ------------------------------------------------------------- mesa
 
 function leerMesa() {
   const m = location.pathname.match(/^\/m\/(.+)$/);
-  return m ? decodeURIComponent(m[1]) : "";
+  return m ? decodeURIComponent(m[1]).trim() : "";
 }
 
 function pintarMesa() {
   const mesa = leerMesa();
   if (!mesa) return;
-  const el = document.getElementById("mesa");
+  const el = $("mesa");
   el.textContent = "Mesa " + mesa;
   el.hidden = false;
 }
 
+// ------------------------------------------------------------- carrito
+
+function guardar() {
+  // Si se le va la señal a media orden, no pierde el carrito.
+  try { localStorage.setItem(LLAVE, JSON.stringify(carrito)); } catch (e) {}
+}
+
+function recuperar() {
+  try {
+    const guardado = JSON.parse(localStorage.getItem(LLAVE) || "{}");
+    for (const [id, n] of Object.entries(guardado)) {
+      if (Number.isInteger(n) && n > 0) carrito[id] = n;
+    }
+  } catch (e) { carrito = {}; }
+}
+
+function limpiar() {
+  carrito = {};
+  guardar();
+}
+
+function lineas() {
+  return Object.entries(carrito)
+    .map(([id, cantidad]) => ({ producto: CATALOGO[id], cantidad }))
+    .filter(l => l.producto);
+}
+
+const totalCentavos = () =>
+  lineas().reduce((s, l) => s + l.producto.precio_centavos * l.cantidad, 0);
+
+const totalPiezas = () =>
+  lineas().reduce((s, l) => s + l.cantidad, 0);
+
+function cambiar(id, delta) {
+  const actual = carrito[id] || 0;
+  const nuevo = Math.min(50, Math.max(0, actual + delta));
+  if (nuevo === 0) delete carrito[id];
+  else carrito[id] = nuevo;
+  guardar();
+  refrescarPasos();
+  refrescarBarra();
+  if (!$("telon").hidden) pintarHoja();
+}
+
+// ------------------------------------------------------------- menú
+
 function pintarMenu(categorias) {
-  const menu = document.getElementById("menu");
-  const tabs = document.getElementById("pestanas");
+  const menu = $("menu");
+  const tabs = $("pestanas");
   menu.textContent = "";
   tabs.textContent = "";
+  CATALOGO = {};
 
   if (!categorias.length) {
     menu.innerHTML = '<p class="aviso">Todavía no hay productos cargados.</p>';
@@ -235,38 +457,325 @@ function pintarMenu(categorias) {
     menu.appendChild(titulo);
 
     for (const p of cat.productos) {
-      const fila = document.createElement("div");
-      fila.className = "fila" + (p.disponible ? "" : " agotado");
-
-      const nombre = document.createElement("p");
-      nombre.className = "nombre";
-      nombre.textContent = p.nombre;
-      if (!p.disponible) {
-        const sello = document.createElement("span");
-        sello.className = "sello";
-        sello.textContent = "Hoy no hay";
-        nombre.appendChild(sello);
-      }
-      fila.appendChild(nombre);
-
-      const precio = document.createElement("span");
-      precio.className = "precio";
-      precio.textContent = pesos(p.precio_centavos);
-      fila.appendChild(precio);
-
-      if (p.descripcion) {
-        const desc = document.createElement("p");
-        desc.className = "desc";
-        desc.textContent = p.descripcion;
-        fila.appendChild(desc);
-      }
-
-      menu.appendChild(fila);
+      CATALOGO[p.id] = p;
+      menu.appendChild(filaProducto(p));
     }
   }
 
+  // Si algo del carrito guardado ya no existe o se agotó, se cae solo.
+  for (const id of Object.keys(carrito)) {
+    if (!CATALOGO[id] || !CATALOGO[id].disponible) delete carrito[id];
+  }
+  guardar();
+
+  refrescarPasos();
+  refrescarBarra();
   marcarPestanaVisible();
 }
+
+function filaProducto(p) {
+  const fila = document.createElement("div");
+  fila.className = "fila" + (p.disponible ? "" : " agotado");
+
+  const info = document.createElement("div");
+  info.className = "info";
+
+  const nombre = document.createElement("p");
+  nombre.className = "nombre";
+  nombre.textContent = p.nombre;
+  if (!p.disponible) {
+    const sello = document.createElement("span");
+    sello.className = "sello";
+    sello.textContent = "Hoy no hay";
+    nombre.appendChild(sello);
+  }
+  info.appendChild(nombre);
+
+  if (p.descripcion) {
+    const desc = document.createElement("p");
+    desc.className = "desc";
+    desc.textContent = p.descripcion;
+    info.appendChild(desc);
+  }
+  fila.appendChild(info);
+
+  const derecha = document.createElement("div");
+  derecha.className = "derecha";
+
+  const precio = document.createElement("span");
+  precio.className = "precio";
+  precio.textContent = pesos(p.precio_centavos);
+  derecha.appendChild(precio);
+
+  if (p.disponible) {
+    const paso = document.createElement("div");
+    paso.className = "paso";
+    paso.dataset.producto = p.id;
+    derecha.appendChild(paso);
+  }
+
+  fila.appendChild(derecha);
+  return fila;
+}
+
+function refrescarPasos() {
+  for (const paso of document.querySelectorAll(".paso")) {
+    const id = paso.dataset.producto;
+    const p = CATALOGO[id];
+    const n = carrito[id] || 0;
+    paso.textContent = "";
+
+    if (n > 0) {
+      paso.appendChild(boton("−", "Quitar un " + p.nombre, () => cambiar(id, -1)));
+      const cuenta = document.createElement("span");
+      cuenta.className = "cuenta";
+      cuenta.textContent = n;
+      paso.appendChild(cuenta);
+    }
+    paso.appendChild(boton("+", "Agregar un " + p.nombre, () => cambiar(id, 1)));
+  }
+}
+
+function boton(texto, etiqueta, alTocar) {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.textContent = texto;
+  b.setAttribute("aria-label", etiqueta);
+  b.addEventListener("click", alTocar);
+  return b;
+}
+
+function refrescarBarra() {
+  const piezas = totalPiezas();
+  const barra = $("barra");
+  barra.hidden = piezas === 0;
+  document.body.classList.toggle("con-barra", piezas > 0);
+  if (!piezas) return;
+  $("barraResumen").textContent =
+    piezas === 1 ? "1 producto · Ver pedido" : piezas + " productos · Ver pedido";
+  $("barraTotal").textContent = pesos(totalCentavos());
+}
+
+// ------------------------------------------------------------- hoja del pedido
+
+function abrirHoja() {
+  $("telon").hidden = false;
+  document.body.classList.add("sin-scroll");
+  pintarHoja();
+}
+
+function cerrarHoja() {
+  $("telon").hidden = true;
+  document.body.classList.remove("sin-scroll");
+}
+
+function pintarHoja() {
+  const hoja = $("hoja");
+  const ls = lineas();
+
+  if (!ls.length) { cerrarHoja(); return; }
+
+  hoja.textContent = "";
+  hoja.appendChild(elem("h2", "", "Tu pedido"));
+  const mesa = leerMesa();
+  hoja.appendChild(elem("p", "sub", mesa ? "Mesa " + mesa : "Para llevar a tu mesa"));
+
+  for (const l of ls) {
+    const r = document.createElement("div");
+    r.className = "renglon";
+
+    const paso = document.createElement("div");
+    paso.className = "paso";
+    paso.appendChild(boton("−", "Quitar uno", () => cambiar(l.producto.id, -1)));
+    const cuenta = document.createElement("span");
+    cuenta.className = "cuenta";
+    cuenta.textContent = l.cantidad;
+    paso.appendChild(cuenta);
+    paso.appendChild(boton("+", "Agregar uno", () => cambiar(l.producto.id, 1)));
+    r.appendChild(paso);
+
+    const nombre = document.createElement("div");
+    nombre.className = "nombre";
+    nombre.textContent = l.producto.nombre;
+    const sp = document.createElement("div");
+    sp.className = "sub-precio";
+    sp.textContent = pesos(l.producto.precio_centavos) + " c/u";
+    nombre.appendChild(sp);
+    r.appendChild(nombre);
+
+    r.appendChild(elem("div", "importe",
+      pesos(l.producto.precio_centavos * l.cantidad)));
+    hoja.appendChild(r);
+  }
+
+  const tot = document.createElement("div");
+  tot.className = "totales";
+  tot.appendChild(elem("span", "", "Total"));
+  tot.appendChild(elem("span", "granTotal", pesos(totalCentavos())));
+  hoja.appendChild(tot);
+
+  if (!mesa) {
+    const campo = document.createElement("div");
+    campo.className = "campo";
+    campo.id = "campoMesa";
+    campo.appendChild(elem("label", "", "¿En qué mesa estás?"));
+    const input = document.createElement("input");
+    input.id = "inputMesa";
+    input.type = "text";
+    input.inputMode = "numeric";
+    input.placeholder = "Número de mesa";
+    input.addEventListener("input", () => {
+      campo.classList.remove("malo");
+      const e = campo.querySelector(".error");
+      if (e) e.remove();
+    });
+    campo.appendChild(input);
+    hoja.appendChild(campo);
+  }
+
+  const nota = document.createElement("div");
+  nota.className = "campo";
+  nota.appendChild(elem("label", "", "¿Algo que debamos saber? (opcional)"));
+  const ta = document.createElement("textarea");
+  ta.id = "inputNota";
+  ta.maxLength = 300;
+  ta.placeholder = "Sin cebolla, salsa aparte…";
+  nota.appendChild(ta);
+  hoja.appendChild(nota);
+
+  const alerta = elem("p", "alerta", "");
+  alerta.id = "alerta";
+  alerta.hidden = true;
+  hoja.appendChild(alerta);
+
+  const enviar = document.createElement("button");
+  enviar.className = "principal";
+  enviar.id = "btnEnviar";
+  enviar.type = "button";
+  enviar.textContent = "Enviar pedido · " + pesos(totalCentavos());
+  enviar.addEventListener("click", enviarPedido);
+  hoja.appendChild(enviar);
+
+  const seguir = document.createElement("button");
+  seguir.className = "secundario";
+  seguir.type = "button";
+  seguir.textContent = "Seguir viendo el menú";
+  seguir.addEventListener("click", cerrarHoja);
+  hoja.appendChild(seguir);
+}
+
+function elem(tag, clase, texto) {
+  const e = document.createElement(tag);
+  if (clase) e.className = clase;
+  if (texto) e.textContent = texto;
+  return e;
+}
+
+// ------------------------------------------------------------- enviar
+
+async function enviarPedido() {
+  if (enviando) return;
+
+  let mesa = leerMesa();
+  if (!mesa) {
+    const input = $("inputMesa");
+    mesa = (input.value || "").trim();
+    if (!mesa) {
+      const campo = $("campoMesa");
+      campo.classList.add("malo");
+      if (!campo.querySelector(".error")) {
+        campo.appendChild(elem("p", "error", "Escribe tu número de mesa."));
+      }
+      input.focus();
+      return;
+    }
+  }
+
+  const boton = $("btnEnviar");
+  const alerta = $("alerta");
+  enviando = true;
+  boton.disabled = true;
+  boton.textContent = "Enviando…";
+  alerta.hidden = true;
+
+  try {
+    const r = await fetch("/pedidos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        mesa,
+        nota: ($("inputNota").value || "").trim(),
+        items: Object.entries(carrito).map(([id, cantidad]) => ({
+          producto_id: Number(id), cantidad,
+        })),
+      }),
+    });
+
+    if (r.status === 409) {
+      const detalle = (await r.json()).detail || {};
+      manejarAgotados(detalle);
+      return;
+    }
+    if (!r.ok) throw new Error(r.status);
+
+    confirmar(await r.json());
+  } catch (err) {
+    alerta.textContent = "No se pudo enviar. Revisa tu conexión e inténtalo otra vez.";
+    alerta.hidden = false;
+  } finally {
+    enviando = false;
+    const b = $("btnEnviar");
+    if (b) {
+      b.disabled = false;
+      b.textContent = "Enviar pedido · " + pesos(totalCentavos());
+    }
+  }
+}
+
+function manejarAgotados(detalle) {
+  // Se acabó algo mientras el cliente decidía. Le decimos exactamente qué,
+  // se lo quitamos del carrito y le dejamos el resto intacto.
+  const nombres = (detalle.agotados || []).map(a => a.nombre);
+  for (const a of detalle.agotados || []) delete carrito[a.id];
+  for (const id of detalle.desconocidos || []) delete carrito[id];
+  guardar();
+
+  cargar().then(() => {
+    if (!Object.keys(carrito).length) {
+      cerrarHoja();
+      return;
+    }
+    pintarHoja();
+    const alerta = $("alerta");
+    alerta.textContent = nombres.length
+      ? "Se acabó: " + nombres.join(", ") + ". Lo quitamos de tu pedido."
+      : "Algunos productos ya no están disponibles. Revisa tu pedido.";
+    alerta.hidden = false;
+  });
+}
+
+function confirmar(res) {
+  limpiar();
+  refrescarPasos();
+  refrescarBarra();
+
+  const hoja = $("hoja");
+  hoja.textContent = "";
+  hoja.appendChild(elem("h2", "", "Pedido enviado"));
+  hoja.appendChild(elem("p", "sub", "Ya lo está viendo el taquero."));
+  hoja.appendChild(elem("p", "folio", "#" + res.pedido_id));
+  hoja.appendChild(elem("p", "sub", "Mesa " + res.mesa + " · " +
+    pesos(res.total_centavos) + " · se paga con el mesero"));
+
+  const otro = document.createElement("button");
+  otro.className = "principal";
+  otro.type = "button";
+  otro.textContent = "Pedir algo más";
+  otro.addEventListener("click", cerrarHoja);
+  hoja.appendChild(otro);
+}
+
+// ------------------------------------------------------------- carga
 
 function marcarPestanaVisible() {
   const titulos = document.querySelectorAll(".rotulo");
@@ -285,8 +794,7 @@ function marcarPestanaVisible() {
 }
 
 async function cargar() {
-  const menu = document.getElementById("menu");
-  menu.innerHTML = '<p class="aviso">Cargando el menú…</p>';
+  const menu = $("menu");
   try {
     const r = await fetch("/api/menu", { cache: "no-store" });
     if (!r.ok) throw new Error(r.status);
@@ -299,7 +807,16 @@ async function cargar() {
   }
 }
 
+$("barra").addEventListener("click", abrirHoja);
+$("telon").addEventListener("click", e => {
+  if (e.target === $("telon")) cerrarHoja();
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && !$("telon").hidden) cerrarHoja();
+});
+
 pintarMesa();
+recuperar();
 cargar();
 </script>
 
